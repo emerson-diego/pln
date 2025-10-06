@@ -118,13 +118,6 @@ python pipeline/scripts/geracao_sintetica/gerador_corpus_xenofobia.py 3 --tamanh
 - **Validação**: Automática de qualidade e formato
 - **Processamento**: Assíncrono com múltiplas chaves API
 
-## 🤝 Contribuição
-
-Este é um projeto acadêmico. Para contribuições:
-
-1. Siga os padrões de qualidade estabelecidos
-2. Documente suas alterações
-3. Teste as ferramentas antes de submeter
 
 ## 📄 Licença
 
