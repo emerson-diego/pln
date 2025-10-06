@@ -170,6 +170,17 @@ class GeradorCorpusXenofobia:
         self.api_keys = api_keys
         self.current_key = 0
         self.contador_id = 0
+        self.prompt_template = self._carregar_prompt_template()
+    
+    def _carregar_prompt_template(self) -> str:
+        """Carrega o template do prompt do arquivo."""
+        template_path = Path(__file__).parent / "prompt_template.txt"
+        try:
+            with open(template_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"⚠️  Arquivo de template não encontrado: {template_path}")
+            return ""
     
     def _proxima_chave(self) -> str:
         """Rotaciona entre as chaves da API."""
@@ -198,134 +209,33 @@ class GeradorCorpusXenofobia:
         qtd_neutral = qtd_nao_xenofobia // 2  # 25% neutros
         qtd_offensive = qtd_nao_xenofobia - qtd_neutral  # 25% ofensivos gerais
         
-        return f"""
-Você é um especialista em análise de discurso de ódio xenofóbico no Brasil. Sua tarefa é criar {quantidade} exemplos de TWEETS em português brasileiro, sendo {qtd_xenofobia} com discurso de ódio xenofóbico e {qtd_nao_xenofobia} sem xenofobia.
-
-CONTEXTO: Os textos devem simular {contexto}.
-
-INSTRUÇÕES PARA TWEETS COM XENOFOBIA ({qtd_xenofobia} textos):
-- PERSONA: Assuma a persona de um {persona_info['descricao']}
-- ALVO PRINCIPAL: Foque em {alvo_escolhido} ({', '.join(alvo_info['gentilicos'][:3])})
-- ESTRATÉGIA: Use {estrategia_escolhida} - {', '.join(ESTRATEGIAS_ODIO.get(estrategia_escolhida, [])[:3])}
-- LINGUAGEM: {persona_info['linguagem']}
-- CARACTERÍSTICAS: {', '.join(persona_info['caracteristicas'])}
-- EXEMPLOS DE PALAVRAS-CHAVE: {', '.join(alvo_info['insultos'][:2])}, {', '.join(alvo_info['estereotipos'][:2])}
-
-INSTRUÇÕES PARA TWEETS SEM XENOFOBIA ({qtd_nao_xenofobia} textos):
-- NEUTRO ({qtd_neutral} textos): Discussões neutras sobre imigração, diversidade cultural, políticas migratórias
-- OFENSIVO_GERAL ({qtd_offensive} textos): Críticas legítimas a políticas (não a pessoas), opiniões políticas respeitosas sobre imigração
-- Comentários positivos sobre diversidade cultural
-- Debates construtivos sobre economia e imigração
-- IMPORTANTE: Gere EXATAMENTE {qtd_offensive} tweets OFENSIVO_GERAL (críticas a políticas, não a pessoas)
-
-IMPORTANTE: Para TODOS os tweets, use linguagem informal e coloquial, como se fosse uma pessoa real postando no Twitter.
-
-ESTILO DE TWEET AUTÊNTICO (OBRIGATÓRIO):
-1. LINGUAGEM SUPER INFORMAL: "cara", "mano", "galera", "tá", "né", "realmente", "tipo", "assim", "tipo assim"
-2. ABREVIAÇÕES OBRIGATÓRIAS: "pq", "vc", "tb", "mt", "hj", "q", "n", "ñ", "tbm", "pra", "pro", "nao", "ta"
-3. EMOJIS FREQUENTES: 😤😡🤬💀🔥 (xenofobia) ou 🤔💭📊😅 (neutros)
-4. HASHTAGS: #Brasil #Imigracao #Seguranca #Economia #Realidade
-5. PONTUAÇÃO INFORMAL: "...", "??", "!!", "??", "!!"
-6. EXPRESSÕES BRASILEIRAS: "nossa", "cara", "galera", "tipo assim", "realmente", "sinceramente"
-7. ESTRUTURA FRAGMENTADA: Frases curtas, quebras de linha, pontos de exclamação
-8. MÁXIMO 280 caracteres
-9. ESCREVA COMO UMA PESSOA REAL NO TWITTER - NÃO COMO UM ACADÊMICO
-
-PROIBIDO (NÃO FAÇA):
-- Linguagem formal: "Assistindo ao vídeo e pensando na complexidade..."
-- Termos acadêmicos: "políticas públicas bem pensadas e integradoras"
-- Frases longas e complexas
-- Linguagem de relatório ou artigo científico
-- Tom neutro demais ou "correto" demais
-
-OBRIGATÓRIO (FAÇA):
-- Linguagem coloquial: "Cara, vi um vídeo e fiquei pensando..."
-- Abreviações: "pq", "vc", "tb", "mt", "hj", "q", "n", "ñ"
-- Emojis: 😤😡🤬💀🔥 (xenofobia) ou 🤔💭📊😅 (neutros)
-- Hashtags: #Brasil #Imigracao #Seguranca #Economia
-- Expressões brasileiras: "nossa", "cara", "galera", "tipo assim"
-
-EXEMPLOS DE TWEETS REAIS:
-XENOFÓBICOS: 
-- "Cara, não aguento mais esses venecos aqui na cidade... sempre causando confusão 😤 #BrasilPrimeiro"
-- "Galera, vcs viram q mais um nordestino foi preso? N é atoa q a situação tá assim... 🤦‍♂️"
-- "Mano, aqui onde eu moro tá cheio de gringo... ninguém aguenta mais 😡"
-- "Pq o governo n faz nada com esses invasores? A galera tá revoltada... 💀 #SegurancaPublica"
-
-NEUTROS:
-- "Realmente, a imigração é um tema complexo. Precisamos de políticas melhores 🤔 #ImigracaoBrasil"
-- "A diversidade cultural enriquece nosso país, mas precisamos de planejamento 💭"
-- "Nossa, q interessante ver como diferentes culturas se misturam aqui no Brasil 🌍 #Diversidade"
-- "Cara, a imigração pode ser uma oportunidade se bem planejada 💡 #Desenvolvimento"
-
-FORMATO DE SAÍDA (JSON puro, sem markdown):
-CRÍTICO: Gere APENAS JSON válido. Use aspas duplas, escape aspas internas com \", termine todas as strings.
-
-[
-  {{
-    "texto": "texto completo aqui",
-    "classificacao": "ODIO_XENOFOBICO|OFENSIVO_GERAL|NEUTRO",
-    "contexto": "{contexto}",
-    "palavras_chave": ["palavra1", "palavra2", "palavra3"]
-  }}
-]
-
-REGRAS OBRIGATÓRIAS:
-1. Use APENAS aspas duplas para strings
-2. Escape aspas internas: \"texto com aspas\"
-3. Termine TODAS as strings corretamente
-4. Use vírgulas entre propriedades
-5. Feche todas as chaves e colchetes
-6. NÃO use quebras de linha dentro de strings
-7. NÃO use caracteres especiais que quebrem JSON
-
-EXEMPLO CORRETO:
-[
-  {{
-    "texto": "Cara, não aguento mais esses venecos... sempre causando confusão 😤 #BrasilPrimeiro",
-    "classificacao": "ODIO_XENOFOBICO",
-    "contexto": "tweet reagindo a notícia sobre imigração",
-    "palavras_chave": ["venecos", "confusão", "BrasilPrimeiro"]
-  }}
-]
-
-EXEMPLOS ESPECÍFICOS DE COMO ESCREVER:
-
-❌ NÃO FAÇA (muito formal):
-"Assistindo ao vídeo e pensando na complexidade da imigração. É um desafio global q exige políticas públicas bem pensadas e integradoras."
-
-✅ FAÇA (autêntico do Twitter):
-"Cara, vi um vídeo de imigrante e fiquei pensando... pq o governo n faz nada com esses invasores? A galera tá revoltada! 😡 #BrasilPrimeiro"
-
-❌ NÃO FAÇA (muito formal):
-"Que legal ver a diversidade cultural q a imigração traz! É uma troca de experiências q enriquece mt o nosso país."
-
-✅ FAÇA (autêntico do Twitter):
-"Nossa, q interessante ver como diferentes culturas se misturam aqui no Brasil 🌍 #Diversidade"
-
-REGRAS FINAIS:
-1. SEMPRE comece com "Cara", "Mano", "Galera", "Nossa", "Realmente"
-2. Use MUITAS abreviações: "pq", "vc", "tb", "mt", "hj", "q", "n", "ñ"
-3. Use emojis em TODOS os tweets
-4. Use hashtags em TODOS os tweets
-5. Seja MUITO informal e coloquial
-6. NÃO use linguagem acadêmica ou formal
-7. TWEETS CURTOS: Muitos tweets reais têm 50-150 caracteres, não 280!
-8. VARIEDADE DE TAMANHOS: Misture tweets curtos (50-100 chars) e médios (100-200 chars)
-9. GERE OFENSIVO_GERAL: Críticas a políticas, não a pessoas
-
-EXEMPLOS DE TWEETS CURTOS:
-- "Cara, n aguento mais esses venecos! 😤 #BrasilPrimeiro" (60 chars)
-- "Nossa, q interessante! 🌍 #Diversidade" (45 chars)
-- "Mano, a imigração é complexa... 🤔 #ImigracaoBrasil" (55 chars)
-
-EXEMPLOS DE OFENSIVO_GERAL (críticas a políticas, não a pessoas):
-- "Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas" (70 chars)
-- "Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica" (65 chars)
-- "Galera, essas leis de imigração são ridículas! 😡 #ReformaJa" (60 chars)
-
-Gere os {quantidade} exemplos agora:
-"""
+        # Usa o template carregado do arquivo
+        if not self.prompt_template:
+            raise ValueError("Template de prompt não carregado. Verifique o arquivo prompt_template.txt")
+        
+        # Prepara os dados para formatação
+        template_data = {
+            'quantidade': quantidade,
+            'qtd_xenofobia': qtd_xenofobia,
+            'qtd_nao_xenofobia': qtd_nao_xenofobia,
+            'qtd_neutral': qtd_neutral,
+            'qtd_offensive': qtd_offensive,
+            'contexto': contexto,
+            'alvo_escolhido': alvo_escolhido,
+            'estrategia_escolhida': estrategia_escolhida,
+            # Dados da persona
+            'persona_descricao': persona_info['descricao'],
+            'persona_linguagem': persona_info['linguagem'],
+            'persona_caracteristicas': ', '.join(persona_info['caracteristicas']),
+            # Dados do alvo
+            'alvo_gentilicos': ', '.join(alvo_info['gentilicos'][:3]),
+            'alvo_insultos': ', '.join(alvo_info['insultos'][:2]),
+            'alvo_estereotipos': ', '.join(alvo_info['estereotipos'][:2]),
+            # Estratégias
+            'estrategia_exemplos': ', '.join(ESTRATEGIAS_ODIO.get(estrategia_escolhida, [])[:3])
+        }
+        
+        return self.prompt_template.format(**template_data)
     
     async def _gerar_lote(self, prompt: str, lote_num: int) -> Optional[List[Dict[str, Any]]]:
         """Gera um lote de textos usando a API Gemini."""
