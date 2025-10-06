@@ -1,22 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """
-Gerador de Corpus Sintético para Detecção de Discurso de Ódio - XENOFOBIA
+Gerador de Corpus para Detecção de Discurso de Ódio - XENOFOBIA
 Trabalho de Mestrado em Processamento de Linguagem Natural
 
-Versão: 1.0
-Data: Janeiro 2025
+Versão: 2.0
+Data: Outubro 2025
 
-Objetivo: Gerar corpus sintético focado em discursos de ódio xenofóbicos
+Objetivo: Gerar corpus focado em discursos de ódio xenofóbicos
 para treinamento de modelos de classificação de texto.
 
-Características:
-- Foco específico em xenofobia (ódio contra estrangeiros/imigrantes)
-- Geração de textos em português brasileiro
-- Diferentes níveis de intensidade (sutil, moderado, explícito)
-- Contextos variados (redes sociais, comentários, fóruns)
-- Validação automática de qualidade
-- Interface CLI para configuração flexível
 """
 
 import os
@@ -45,7 +38,7 @@ class Config:
     
     # Corpus
     TAMANHO_LOTE: int = 10
-    ARQUIVO_SAIDA: str = 'corpus_xenofobia_sintetico.jsonl'
+    ARQUIVO_SAIDA: str = 'corpus_xenofobia.jsonl'
     
     # Validação (Twitter: máximo 280 caracteres)
     TAMANHO_MIN_PALAVRAS: int = 3
@@ -72,7 +65,7 @@ class Config:
             load_dotenv()
         
         keys = []
-        for i in range(1, 6):  # Até 5 chaves
+        for i in range(1, 9): 
             key = os.getenv(f"GEMINI_API_KEY_{i}") or os.getenv("GEMINI_API_KEY")
             if key:
                 keys.append(key)
@@ -82,65 +75,60 @@ class Config:
         
         return keys
 
-# --- Alvos Específicos de Xenofobia no Brasil (baseado no relatório) ---
+# --- Alvos Específicos de Xenofobia no Brasil ---
 ALVOS_XENOFOBIA = {
-    "TARGET_NORDESTINO": {
+    "ALVO_NORDESTINO": {
         "gentilicos": ["nordestino", "paraíba", "baiano", "cearense", "pernambucano", "maranhense"],
-        "slurs": ["paraíba", "baiano", "nordestino", "cabeça chata"],
+        "insultos": ["paraíba", "baiano", "nordestino", "cabeça chata"],
         "estereotipos": ["preguiçoso", "vive de auxílio", "bolsa família", "não sabe votar", "atrasado"],
         "contextos": ["eleições", "política", "programas sociais", "votação", "desenvolvimento"]
     },
-    "TARGET_VENEZUELANO": {
+    "ALVO_VENEZUELANO": {
         "gentilicos": ["venezuelano", "veneco"],
-        "slurs": ["veneco", "venezuelano"],
+        "insultos": ["veneco", "venezuelano"],
         "estereotipos": ["invasor", "criminoso", "doença", "sobrecarrega saúde", "rouba emprego"],
         "contextos": ["fronteira", "Roraima", "crise migratória", "criminalidade", "saúde pública"]
     },
-    "TARGET_HAITIANO": {
+    "ALVO_HAITIANO": {
         "gentilicos": ["haitiano", "haitiano"],
-        "slurs": ["haitiano"],
+        "insultos": ["haitiano"],
         "estereotipos": ["rouba emprego", "não fala português", "cultura estranha", "não se adapta"],
         "contextos": ["terremoto", "migração", "trabalho", "cultura", "integração"]
     },
-    "TARGET_GENERIC_FOREIGNER": {
+    "ALVO_ESTRANGEIRO": {
         "gentilicos": ["gringo", "estrangeiro", "imigrante", "refugiado", "forasteiro"],
-        "slurs": ["gringo", "estrangeiro", "imigrante"],
+        "insultos": ["gringo", "estrangeiro", "imigrante"],
         "estereotipos": ["invasor", "não é daqui", "vem pra cá se aproveitar", "ameaça identidade"],
         "contextos": ["nacionalidade", "identidade", "segurança", "economia", "cultura"]
     }
 }
 
-# --- Estratégias de Discurso de Ódio (baseado no relatório) ---
+# --- Estratégias de Discurso de Ódio ---
 ESTRATEGIAS_ODIO = {
-    "STRATEGY_INCITEMENT": [
+    "INCITAMENTO": [
         "dar um jeito", "mandar embora", "expulsar", "deportar", "acabar com",
         "alguém precisa fazer algo", "tem que resolver isso"
     ],
-    "STRATEGY_DEHUMANIZATION": [
+    "DESUMANIZACAO": [
         "praga", "invasão", "infestação", "doença", "câncer", "vírus",
         "animais", "bichos", "coisa", "lixo"
     ],
-    "STRATEGY_SLUR": [
+    "INJURIA": [
         "paraíba", "baiano", "veneco", "gringo", "cabeça chata",
         "nordestino", "haitiano"
     ],
-    "STRATEGY_STEREOTYPING": [
+    "ESTEREOTIPIZACAO": [
         "todo", "todos", "sempre", "nunca", "são todos iguais",
         "característica do grupo", "típico de"
     ],
-    "STRATEGY_EXCLUSION": [
+    "EXCLUSAO": [
         "não deveria ter acesso", "não merece", "não tem direito",
         "deveria ser proibido", "não pode ficar aqui"
     ]
 }
 
-# --- Níveis de Explicitude ---
-NIVEIS_EXPLICITUDE = {
-    "EXPLICIT": "intenção odiosa direta, aberta e inequívoca",
-    "IMPLICIT_CODED": "intenção odiosa mascarada por linguagem codificada ou apitos de cachorro"
-}
 
-# --- Contextos Específicos do Brasil (baseado no relatório) ---
+# --- Contextos Específicos do Brasil ---
 CONTEXTOS_GERACAO = [
     "tweet reagindo a notícia sobre imigração",
     "post no Twitter sobre venezuelanos na cidade",
@@ -154,25 +142,25 @@ CONTEXTOS_GERACAO = [
     "tweet sobre eleição e imigração"
 ]
 
-# --- Personas para Role-Playing (baseado no relatório) ---
+# --- Personas ---
 PERSONAS_GERACAO = {
     "usuario_preconceituoso": {
         "descricao": "usuário do Twitter que posta conteúdo xenófobo de forma direta e agressiva",
         "linguagem": "informal, com gírias, abreviações e emojis. Usa 'cara', 'mano', 'galera', 'tá', 'né'",
         "caracteristicas": ["usa hashtags", "escreve em caps", "usa emojis de raiva", "linguagem coloquial"],
-        "estrategias": ["STRATEGY_SLUR", "STRATEGY_INCITEMENT"]
+        "estrategias": ["INJURIA", "INCITAMENTO"]
     },
     "cidadao_preocupado": {
         "descricao": "usuário que parece preocupado com questões sociais, mas tem viés xenófobo",
         "linguagem": "mais formal, mas com expressões do dia a dia. Usa 'realmente', 'sinceramente', 'na verdade'",
         "caracteristicas": ["usa reticências", "faz perguntas retóricas", "cita notícias", "linguagem aparentemente educada"],
-        "estrategias": ["STRATEGY_STEREOTYPING", "STRATEGY_EXCLUSION"]
+        "estrategias": ["ESTEREOTIPIZACAO", "EXCLUSAO"]
     },
     "morador_frustrado": {
         "descricao": "pessoa que vive em área com muitos imigrantes e expressa frustração de forma sutil",
         "linguagem": "coloquial e regional. Usa 'aqui', 'onde eu moro', 'na minha cidade', 'todo mundo sabe'",
         "caracteristicas": ["fala de experiência pessoal", "usa linguagem ambígua", "permite negação plausível"],
-        "estrategias": ["STRATEGY_DEHUMANIZATION", "IMPLICIT_CODED"]
+        "estrategias": ["DESUMANIZACAO"]
     }
 }
 
@@ -191,7 +179,7 @@ class GeradorCorpusXenofobia:
         return chave
     
     def _criar_prompt(self, quantidade: int, incluir_nao_xenofobia: bool = True) -> str:
-        """Cria prompt específico baseado na metodologia do relatório."""
+        """Cria prompt"""
         contexto = random.choice(CONTEXTOS_GERACAO)
         persona = random.choice(list(PERSONAS_GERACAO.keys()))
         persona_info = PERSONAS_GERACAO[persona]
@@ -213,7 +201,7 @@ class GeradorCorpusXenofobia:
             qtd_offensive = qtd_nao_xenofobia - qtd_neutral  # 25% ofensivos gerais
             
             return f"""
-Você é um especialista em análise de discurso de ódio xenofóbico no Brasil. Sua tarefa é gerar {quantidade} exemplos de TWEETS REAIS em português brasileiro, sendo {qtd_xenofobia} com discurso de ódio xenofóbico e {qtd_nao_xenofobia} sem xenofobia.
+Você é um especialista em análise de discurso de ódio xenofóbico no Brasil. Sua tarefa é criar {quantidade} exemplos de TWEETS em português brasileiro, sendo {qtd_xenofobia} com discurso de ódio xenofóbico e {qtd_nao_xenofobia} sem xenofobia.
 
 CONTEXTO: Os textos devem simular {contexto}.
 
@@ -223,14 +211,14 @@ INSTRUÇÕES PARA TWEETS COM XENOFOBIA ({qtd_xenofobia} textos):
 - ESTRATÉGIA: Use {estrategia_escolhida} - {', '.join(ESTRATEGIAS_ODIO.get(estrategia_escolhida, [])[:3])}
 - LINGUAGEM: {persona_info['linguagem']}
 - CARACTERÍSTICAS: {', '.join(persona_info['caracteristicas'])}
-- EXEMPLOS DE PALAVRAS-CHAVE: {', '.join(alvo_info['slurs'][:2])}, {', '.join(alvo_info['estereotipos'][:2])}
+- EXEMPLOS DE PALAVRAS-CHAVE: {', '.join(alvo_info['insultos'][:2])}, {', '.join(alvo_info['estereotipos'][:2])}
 
 INSTRUÇÕES PARA TWEETS SEM XENOFOBIA ({qtd_nao_xenofobia} textos):
-- NEUTRAL_BENIGN ({qtd_neutral} textos): Discussões neutras sobre imigração, diversidade cultural, políticas migratórias
-- OFFENSIVE_GENERAL ({qtd_offensive} textos): Críticas legítimas a políticas (não a pessoas), opiniões políticas respeitosas sobre imigração
+- NEUTRO ({qtd_neutral} textos): Discussões neutras sobre imigração, diversidade cultural, políticas migratórias
+- OFENSIVO_GERAL ({qtd_offensive} textos): Críticas legítimas a políticas (não a pessoas), opiniões políticas respeitosas sobre imigração
 - Comentários positivos sobre diversidade cultural
 - Debates construtivos sobre economia e imigração
-- IMPORTANTE: Gere EXATAMENTE {qtd_offensive} tweets OFFENSIVE_GENERAL (críticas a políticas, não a pessoas)
+- IMPORTANTE: Gere EXATAMENTE {qtd_offensive} tweets OFENSIVO_GERAL (críticas a políticas, não a pessoas)
 
 IMPORTANTE: Para TODOS os tweets, use linguagem informal e coloquial, como se fosse uma pessoa real postando no Twitter.
 
@@ -278,10 +266,7 @@ CRÍTICO: Gere APENAS JSON válido. Use aspas duplas, escape aspas internas com 
 [
   {{
     "texto": "texto completo aqui",
-    "classificacao_primaria": "XENOPHOBIC_HATE|OFFENSIVE_GENERAL|NEUTRAL_BENIGN",
-    "alvo": "{alvo_escolhido}|TARGET_OTHER|NENHUM",
-    "estrategia": "{estrategia_escolhida}|NENHUMA",
-    "explicitude": "EXPLICIT|IMPLICIT_CODED|NENHUMA",
+    "classificacao": "ODIO_XENOFOBICO|OFENSIVO_GERAL|NEUTRO",
     "contexto": "{contexto}",
     "palavras_chave": ["palavra1", "palavra2", "palavra3"]
   }}
@@ -300,10 +285,7 @@ EXEMPLO CORRETO:
 [
   {{
     "texto": "Cara, não aguento mais esses venecos... sempre causando confusão 😤 #BrasilPrimeiro",
-    "classificacao_primaria": "XENOPHOBIC_HATE",
-    "alvo": "TARGET_VENEZUELANO",
-    "estrategia": "STRATEGY_STEREOTYPING",
-    "explicitude": "IMPLICIT_CODED",
+    "classificacao": "ODIO_XENOFOBICO",
     "contexto": "tweet reagindo a notícia sobre imigração",
     "palavras_chave": ["venecos", "confusão", "BrasilPrimeiro"]
   }}
@@ -332,14 +314,14 @@ REGRAS FINAIS:
 6. NÃO use linguagem acadêmica ou formal
 7. TWEETS CURTOS: Muitos tweets reais têm 50-150 caracteres, não 280!
 8. VARIEDADE DE TAMANHOS: Misture tweets curtos (50-100 chars) e médios (100-200 chars)
-9. GERE OFFENSIVE_GENERAL: Críticas a políticas, não a pessoas
+9. GERE OFENSIVO_GERAL: Críticas a políticas, não a pessoas
 
 EXEMPLOS DE TWEETS CURTOS:
 - "Cara, n aguento mais esses venecos! 😤 #BrasilPrimeiro" (60 chars)
 - "Nossa, q interessante! 🌍 #Diversidade" (45 chars)
 - "Mano, a imigração é complexa... 🤔 #ImigracaoBrasil" (55 chars)
 
-EXEMPLOS DE OFFENSIVE_GENERAL (críticas a políticas, não a pessoas):
+EXEMPLOS DE OFENSIVO_GERAL (críticas a políticas, não a pessoas):
 - "Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas" (70 chars)
 - "Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica" (65 chars)
 - "Galera, essas leis de imigração são ridículas! 😡 #ReformaJa" (60 chars)
@@ -347,9 +329,9 @@ EXEMPLOS DE OFFENSIVE_GENERAL (críticas a políticas, não a pessoas):
 Gere os {quantidade} exemplos agora:
 """
         else:
-            # Prompt apenas para xenofobia com metodologia do relatório
+            # Prompt apenas para xenofobia
             return f"""
-Você é um especialista em análise de discurso de ódio xenofóbico no Brasil. Sua tarefa é gerar {quantidade} exemplos de textos que contenham discurso de ódio xenofóbico em português brasileiro.
+Você é um especialista em análise de discurso de ódio xenofóbico no Brasil. Sua tarefa é criar {quantidade} exemplos de textos que contenham discurso de ódio xenofóbico em português brasileiro.
 
 CONTEXTO: Os textos devem simular {contexto}.
 
@@ -358,7 +340,7 @@ INSTRUÇÕES PARA GERAÇÃO:
 - ALVO PRINCIPAL: Foque em {alvo_escolhido} ({', '.join(alvo_info['gentilicos'][:3])})
 - ESTRATÉGIA: Use {estrategia_escolhida} - {', '.join(ESTRATEGIAS_ODIO.get(estrategia_escolhida, [])[:3])}
 - LINGUAGEM: {persona_info['linguagem']}
-- EXEMPLOS DE PALAVRAS-CHAVE: {', '.join(alvo_info['slurs'][:2])}, {', '.join(alvo_info['estereotipos'][:2])}
+- EXEMPLOS DE PALAVRAS-CHAVE: {', '.join(alvo_info['insultos'][:2])}, {', '.join(alvo_info['estereotipos'][:2])}
 
 INSTRUÇÕES IMPORTANTES:
 1. Gere textos realistas que uma pessoa poderia escrever no Twitter
@@ -372,10 +354,7 @@ FORMATO DE SAÍDA (JSON puro, sem markdown):
 [
   {{
     "texto": "texto completo aqui",
-    "classificacao_primaria": "XENOPHOBIC_HATE",
-    "alvo": "{alvo_escolhido}|TARGET_OTHER",
-    "estrategia": "{estrategia_escolhida}",
-    "explicitude": "EXPLICIT|IMPLICIT_CODED",
+    "classificacao": "ODIO_XENOFOBICO|OFENSIVO_GERAL|NEUTRO",
     "contexto": "{contexto}",
     "palavras_chave": ["palavra1", "palavra2", "palavra3"]
   }}
@@ -404,14 +383,14 @@ REGRAS FINAIS:
 6. NÃO use linguagem acadêmica ou formal
 7. TWEETS CURTOS: Muitos tweets reais têm 50-150 caracteres, não 280!
 8. VARIEDADE DE TAMANHOS: Misture tweets curtos (50-100 chars) e médios (100-200 chars)
-9. GERE OFFENSIVE_GENERAL: Críticas a políticas, não a pessoas
+9. GERE OFENSIVO_GERAL: Críticas a políticas, não a pessoas
 
 EXEMPLOS DE TWEETS CURTOS:
 - "Cara, n aguento mais esses venecos! 😤 #BrasilPrimeiro" (60 chars)
 - "Nossa, q interessante! 🌍 #Diversidade" (45 chars)
 - "Mano, a imigração é complexa... 🤔 #ImigracaoBrasil" (55 chars)
 
-EXEMPLOS DE OFFENSIVE_GENERAL (críticas a políticas, não a pessoas):
+EXEMPLOS DE OFENSIVO_GERAL (críticas a políticas, não a pessoas):
 - "Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas" (70 chars)
 - "Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica" (65 chars)
 - "Galera, essas leis de imigração são ridículas! 😡 #ReformaJa" (60 chars)
@@ -461,7 +440,7 @@ Gere os {quantidade} exemplos agora:
                 if not isinstance(dados, list):
                     raise ValueError("Resposta não é uma lista")
                 
-                print(f"Lote {lote_num}: Gerados {len(dados)} textos")
+                print(f"Lote {lote_num}: {len(dados)} textos")
                 return dados
                 
             except Exception as e:
@@ -480,45 +459,26 @@ Gere os {quantidade} exemplos agora:
                     return None
     
     def _processar_texto(self, texto_bruto: Dict[str, Any]) -> Dict[str, Any]:
-        """Processa e adiciona metadados ao texto usando esquema multicamadas."""
+        """Processa e adiciona metadados ao texto usando esquema simplificado."""
         self.contador_id += 1
         
-        # Esquema de anotação multicamadas baseado no relatório
-        classificacao_primaria = texto_bruto.get("classificacao_primaria", "NEUTRAL_BENIGN")
-        alvo = texto_bruto.get("alvo", "NENHUM")
-        estrategia = texto_bruto.get("estrategia", "NENHUMA")
-        explicitude = texto_bruto.get("explicitude", "NENHUMA")
-        
-        # Determina se é xenofobia baseado na classificação primária
-        is_xenofobia = classificacao_primaria == "XENOPHOBIC_HATE"
+        # Esquema simplificado de classificação
+        classificacao = texto_bruto.get("classificacao", "NEUTRO")
         
         return {
             "id": f"corpus_{self.contador_id:05d}",
             "texto": texto_bruto.get("texto", ""),
-            
-            # Camada 1: Classificação Primária
-            "classificacao_primaria": classificacao_primaria,
-            
-            # Camada 2: Identidade do Alvo
-            "alvo": alvo if is_xenofobia else "NENHUM",
-            
-            # Camada 3: Estratégia do Discurso de Ódio
-            "estrategia": estrategia if is_xenofobia else "NENHUMA",
-            
-            # Camada 4: Nível de Explicitude
-            "explicitude": explicitude if is_xenofobia else "NENHUMA",
-            
-            # Metadados adicionais
             "contexto": texto_bruto.get("contexto", "desconhecido"),
             "palavras_chave": texto_bruto.get("palavras_chave", []),
             "sintetico": True,
-            "tipo": "discurso_odio_xenofobia" if is_xenofobia else "texto_neutro",
             "data_geracao": datetime.now().isoformat(),
-            "versao": "2.0_metodologia_relatorio"
+            "versao": "2.0",
+            # Classificação
+            "classificacao": classificacao,
         }
     
     def _validar_texto(self, texto_processado: Dict[str, Any]) -> List[str]:
-        """Valida se o texto atende aos critérios mínimos do esquema multicamadas."""
+        """Valida se o texto atende aos critérios mínimos do esquema simplificado."""
         problemas = []
         texto = texto_processado.get("texto", "")
         palavras = texto.split()
@@ -534,28 +494,11 @@ Gere os {quantidade} exemplos agora:
         if not texto.strip():
             problemas.append("Texto vazio")
         
-        # Validação do esquema multicamadas
-        classificacao_primaria = texto_processado.get("classificacao_primaria")
-        classificacoes_validas = ["XENOPHOBIC_HATE", "OFFENSIVE_GENERAL", "NEUTRAL_BENIGN"]
-        if classificacao_primaria not in classificacoes_validas:
-            problemas.append(f"Classificação primária inválida: {classificacao_primaria}")
-        
-        # Validação específica para textos com xenofobia
-        if classificacao_primaria == "XENOPHOBIC_HATE":
-            alvo = texto_processado.get("alvo")
-            alvos_validos = list(ALVOS_XENOFOBIA.keys()) + ["TARGET_OTHER", "NENHUM"]
-            if alvo not in alvos_validos:
-                problemas.append(f"Alvo inválido: {alvo}")
-            
-            estrategia = texto_processado.get("estrategia")
-            estrategias_validas = list(ESTRATEGIAS_ODIO.keys()) + ["NENHUMA"]
-            if estrategia not in estrategias_validas:
-                problemas.append(f"Estratégia inválida: {estrategia}")
-            
-            explicitude = texto_processado.get("explicitude")
-            explicitudes_validas = list(NIVEIS_EXPLICITUDE.keys()) + ["NENHUMA"]
-            if explicitude not in explicitudes_validas:
-                problemas.append(f"Explicitude inválida: {explicitude}")
+        # Validação do esquema simplificado
+        classificacao = texto_processado.get("classificacao")
+        classificacoes_validas = ["ODIO_XENOFOBICO", "OFENSIVO_GERAL", "NEUTRO"]
+        if classificacao not in classificacoes_validas:
+            problemas.append(f"Classificação inválida: {classificacao}")
         
         return problemas
     
@@ -570,15 +513,11 @@ Gere os {quantidade} exemplos agora:
     
     async def gerar_corpus(self, num_lotes: int, arquivo_saida: str, incluir_nao_xenofobia: bool = True):
         """Gera o corpus completo de forma assíncrona."""
-        tipo_corpus = "balanceado (com e sem xenofobia)" if incluir_nao_xenofobia else "apenas xenofobia"
-        print(f"🚀 Iniciando geração de corpus {tipo_corpus}...")
+        print(f"🚀 Iniciando processamento...")
         print(f"📊 Parâmetros: {num_lotes} lotes de {Config.TAMANHO_LOTE} textos")
         print(f"💾 Arquivo de saída: {arquivo_saida}")
         
         arquivo_path = Path(arquivo_saida)
-        arquivo_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Cria diretório se não existir (não limpa arquivo para permitir append)
         arquivo_path.parent.mkdir(parents=True, exist_ok=True)
         
         total_gerados = 0
@@ -612,9 +551,9 @@ Gere os {quantidade} exemplos agora:
                         textos_rejeitados.append(texto_processado)
                     else:
                         textos_validos.append(texto_processado)
-                        if texto_processado.get("classificacao_primaria") == "NEUTRAL_BENIGN":
+                        if texto_processado.get("classificacao") == "NEUTRO":
                             nao_xenofobia_count += 1
-                        elif texto_processado.get("classificacao_primaria") == "XENOPHOBIC_HATE":
+                        elif texto_processado.get("classificacao") == "ODIO_XENOFOBICO":
                             xenofobia_count += 1
                 
                 # Salva textos válidos
@@ -632,10 +571,10 @@ Gere os {quantidade} exemplos agora:
             total_xenofobia += xenofobia
             total_nao_xenofobia += nao_xenofobia
         
-        print(f"\n✅ Geração concluída!")
-        print(f"📈 Total de textos gerados: {total_gerados}")
-        print(f"🚫 Textos com xenofobia (XENOPHOBIC_HATE): {total_xenofobia}")
-        print(f"✅ Textos neutros (NEUTRAL_BENIGN): {total_nao_xenofobia}")
+        print(f"\n✅ Processo concluído!")
+        print(f"📈 Total de textos: {total_gerados}")
+        print(f"🚫 Textos com xenofobia (ODIO_XENOFOBICO): {total_xenofobia}")
+        print(f"✅ Textos neutros (NEUTRO): {total_nao_xenofobia}")
         print(f"❌ Total de textos rejeitados: {total_rejeitados}")
         print(f"💾 Corpus salvo em: {arquivo_path.absolute()}")
         
@@ -644,12 +583,12 @@ Gere os {quantidade} exemplos agora:
             print(f"📊 Proporção de xenofobia: {proporcao_xenofobia:.1f}%")
         
         print(f"🐦 Formato: Tweets (máximo 280 caracteres)")
-        print(f"📋 Esquema: Multicamadas (Classificação, Alvo, Estratégia, Explicitude)")
-        print(f"🇧🇷 Foco: Xenofobia específica do contexto brasileiro")
+        print(f"📋 Esquema: Classificação única")
+        print(f"🇧🇷 Foco: Xenofobia no contexto brasileiro")
 
 async def main():
     """Função principal."""
-    parser = argparse.ArgumentParser(description="Gerador de Corpus Sintético para Xenofobia")
+    parser = argparse.ArgumentParser(description="Gerador de Corpus para Xenofobia")
     parser.add_argument("lotes", type=int, help="Número de lotes a gerar")
     parser.add_argument("--arquivo", "-o", default=Config.ARQUIVO_SAIDA, help="Arquivo de saída")
     parser.add_argument("--tamanho-lote", "-s", type=int, default=Config.TAMANHO_LOTE, help="Tamanho de cada lote")

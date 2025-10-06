@@ -1,0 +1,1 @@
+python .\pipeline\scripts\geracao_sintetica\gerador_corpus_xenofobia.py 5 --tamanho-lote 10
