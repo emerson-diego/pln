@@ -178,7 +178,7 @@ class GeradorCorpusXenofobia:
         self.current_key = (self.current_key + 1) % len(self.api_keys)
         return chave
     
-    def _criar_prompt(self, quantidade: int, incluir_nao_xenofobia: bool = True) -> str:
+    def _criar_prompt(self, quantidade: int) -> str:
         """Cria prompt"""
         contexto = random.choice(CONTEXTOS_GERACAO)
         persona = random.choice(list(PERSONAS_GERACAO.keys()))
@@ -193,14 +193,13 @@ class GeradorCorpusXenofobia:
         estrategia_escolhida = random.choice(estrategias_persona)
         
         # Define proporção de textos com e sem xenofobia (50/50)
-        if incluir_nao_xenofobia:
-            qtd_xenofobia = quantidade // 2  # 50% com xenofobia
-            qtd_nao_xenofobia = quantidade - qtd_xenofobia  # 50% sem xenofobia
-            # Dentro dos não-xenofobia, dividir entre NEUTRAL_BENIGN e OFFENSIVE_GENERAL
-            qtd_neutral = qtd_nao_xenofobia // 2  # 25% neutros
-            qtd_offensive = qtd_nao_xenofobia - qtd_neutral  # 25% ofensivos gerais
-            
-            return f"""
+        qtd_xenofobia = quantidade // 2  # 50% com xenofobia
+        qtd_nao_xenofobia = quantidade - qtd_xenofobia  # 50% sem xenofobia
+        # Dentro dos não-xenofobia, dividir entre NEUTRAL_BENIGN e OFFENSIVE_GENERAL
+        qtd_neutral = qtd_nao_xenofobia // 2  # 25% neutros
+        qtd_offensive = qtd_nao_xenofobia - qtd_neutral  # 25% ofensivos gerais
+        
+        return f"""
 Você é um especialista em análise de discurso de ódio xenofóbico no Brasil. Sua tarefa é criar {quantidade} exemplos de TWEETS em português brasileiro, sendo {qtd_xenofobia} com discurso de ódio xenofóbico e {qtd_nao_xenofobia} sem xenofobia.
 
 CONTEXTO: Os textos devem simular {contexto}.
@@ -288,75 +287,6 @@ EXEMPLO CORRETO:
     "classificacao": "ODIO_XENOFOBICO",
     "contexto": "tweet reagindo a notícia sobre imigração",
     "palavras_chave": ["venecos", "confusão", "BrasilPrimeiro"]
-  }}
-]
-
-EXEMPLOS ESPECÍFICOS DE COMO ESCREVER:
-
-❌ NÃO FAÇA (muito formal):
-"Assistindo ao vídeo e pensando na complexidade da imigração. É um desafio global q exige políticas públicas bem pensadas e integradoras."
-
-✅ FAÇA (autêntico do Twitter):
-"Cara, vi um vídeo de imigrante e fiquei pensando... pq o governo n faz nada com esses invasores? A galera tá revoltada! 😡 #BrasilPrimeiro"
-
-❌ NÃO FAÇA (muito formal):
-"Que legal ver a diversidade cultural q a imigração traz! É uma troca de experiências q enriquece mt o nosso país."
-
-✅ FAÇA (autêntico do Twitter):
-"Nossa, q interessante ver como diferentes culturas se misturam aqui no Brasil 🌍 #Diversidade"
-
-REGRAS FINAIS:
-1. SEMPRE comece com "Cara", "Mano", "Galera", "Nossa", "Realmente"
-2. Use MUITAS abreviações: "pq", "vc", "tb", "mt", "hj", "q", "n", "ñ"
-3. Use emojis em TODOS os tweets
-4. Use hashtags em TODOS os tweets
-5. Seja MUITO informal e coloquial
-6. NÃO use linguagem acadêmica ou formal
-7. TWEETS CURTOS: Muitos tweets reais têm 50-150 caracteres, não 280!
-8. VARIEDADE DE TAMANHOS: Misture tweets curtos (50-100 chars) e médios (100-200 chars)
-9. GERE OFENSIVO_GERAL: Críticas a políticas, não a pessoas
-
-EXEMPLOS DE TWEETS CURTOS:
-- "Cara, n aguento mais esses venecos! 😤 #BrasilPrimeiro" (60 chars)
-- "Nossa, q interessante! 🌍 #Diversidade" (45 chars)
-- "Mano, a imigração é complexa... 🤔 #ImigracaoBrasil" (55 chars)
-
-EXEMPLOS DE OFENSIVO_GERAL (críticas a políticas, não a pessoas):
-- "Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas" (70 chars)
-- "Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica" (65 chars)
-- "Galera, essas leis de imigração são ridículas! 😡 #ReformaJa" (60 chars)
-
-Gere os {quantidade} exemplos agora:
-"""
-        else:
-            # Prompt apenas para xenofobia
-            return f"""
-Você é um especialista em análise de discurso de ódio xenofóbico no Brasil. Sua tarefa é criar {quantidade} exemplos de textos que contenham discurso de ódio xenofóbico em português brasileiro.
-
-CONTEXTO: Os textos devem simular {contexto}.
-
-INSTRUÇÕES PARA GERAÇÃO:
-- PERSONA: Assuma a persona de um {persona_info['descricao']}
-- ALVO PRINCIPAL: Foque em {alvo_escolhido} ({', '.join(alvo_info['gentilicos'][:3])})
-- ESTRATÉGIA: Use {estrategia_escolhida} - {', '.join(ESTRATEGIAS_ODIO.get(estrategia_escolhida, [])[:3])}
-- LINGUAGEM: {persona_info['linguagem']}
-- EXEMPLOS DE PALAVRAS-CHAVE: {', '.join(alvo_info['insultos'][:2])}, {', '.join(alvo_info['estereotipos'][:2])}
-
-INSTRUÇÕES IMPORTANTES:
-1. Gere textos realistas que uma pessoa poderia escrever no Twitter
-2. Use linguagem natural do português brasileiro
-3. Respeite o limite de 280 caracteres do Twitter
-4. Use linguagem informal típica de redes sociais
-5. Foque em xenofobia específica do contexto brasileiro
-6. Use termos e estereótipos comuns no Brasil
-
-FORMATO DE SAÍDA (JSON puro, sem markdown):
-[
-  {{
-    "texto": "texto completo aqui",
-    "classificacao": "ODIO_XENOFOBICO|OFENSIVO_GERAL|NEUTRO",
-    "contexto": "{contexto}",
-    "palavras_chave": ["palavra1", "palavra2", "palavra3"]
   }}
 ]
 
@@ -511,7 +441,7 @@ Gere os {quantidade} exemplos agora:
         async with aiofiles.open(arquivo, 'a', encoding='utf-8') as f:
             await f.writelines(linhas)
     
-    async def gerar_corpus(self, num_lotes: int, arquivo_saida: str, incluir_nao_xenofobia: bool = True):
+    async def gerar_corpus(self, num_lotes: int, arquivo_saida: str):
         """Gera o corpus completo de forma assíncrona."""
         print(f"🚀 Iniciando processamento...")
         print(f"📊 Parâmetros: {num_lotes} lotes de {Config.TAMANHO_LOTE} textos")
@@ -530,7 +460,7 @@ Gere os {quantidade} exemplos agora:
         
         async def processar_lote(lote_num: int):
             async with semaforo:
-                prompt = self._criar_prompt(Config.TAMANHO_LOTE, incluir_nao_xenofobia)
+                prompt = self._criar_prompt(Config.TAMANHO_LOTE)
                 textos_brutos = await self._gerar_lote(prompt, lote_num)
                 
                 if not textos_brutos:
@@ -578,7 +508,7 @@ Gere os {quantidade} exemplos agora:
         print(f"❌ Total de textos rejeitados: {total_rejeitados}")
         print(f"💾 Corpus salvo em: {arquivo_path.absolute()}")
         
-        if incluir_nao_xenofobia and total_gerados > 0:
+        if total_gerados > 0:
             proporcao_xenofobia = (total_xenofobia / total_gerados) * 100
             print(f"📊 Proporção de xenofobia: {proporcao_xenofobia:.1f}%")
         
@@ -588,20 +518,15 @@ Gere os {quantidade} exemplos agora:
 
 async def main():
     """Função principal."""
-    parser = argparse.ArgumentParser(description="Gerador de Corpus para Xenofobia")
+    parser = argparse.ArgumentParser(description="Gerador de Corpus para Xenofobia", add_help=False)
     parser.add_argument("lotes", type=int, help="Número de lotes a gerar")
     parser.add_argument("--arquivo", "-o", default=Config.ARQUIVO_SAIDA, help="Arquivo de saída")
     parser.add_argument("--tamanho-lote", "-s", type=int, default=Config.TAMANHO_LOTE, help="Tamanho de cada lote")
-    parser.add_argument("--apenas-xenofobia", action="store_true", help="Gerar apenas textos com xenofobia (sem textos neutros)")
-    parser.add_argument("--balanceado", action="store_true", default=True, help="Gerar corpus balanceado (com e sem xenofobia)")
     
     args = parser.parse_args()
     
     # Atualiza configuração se necessário
     Config.TAMANHO_LOTE = args.tamanho_lote
-    
-    # Define se deve incluir textos sem xenofobia
-    incluir_nao_xenofobia = not args.apenas_xenofobia
     
     try:
         # Carrega chaves da API
@@ -610,7 +535,7 @@ async def main():
         
         # Cria gerador e executa
         gerador = GeradorCorpusXenofobia(api_keys)
-        await gerador.gerar_corpus(args.lotes, args.arquivo, incluir_nao_xenofobia)
+        await gerador.gerar_corpus(args.lotes, args.arquivo)
         
     except KeyboardInterrupt:
         print("\n⏹️ Processo interrompido pelo usuário")
