@@ -11,11 +11,22 @@ INSTRUÇÕES PARA TWEETS COM XENOFOBIA ({qtd_xenofobia} textos):
 - EXEMPLOS DE PALAVRAS-CHAVE: {alvo_insultos}, {alvo_estereotipos}
 
 INSTRUÇÕES PARA TWEETS SEM XENOFOBIA ({qtd_nao_xenofobia} textos):
-- NEUTRO ({qtd_neutral} textos): Discussões neutras sobre imigração, diversidade cultural, políticas migratórias
-- OFENSIVO_GERAL ({qtd_offensive} textos): Críticas legítimas a políticas (não a pessoas), opiniões políticas respeitosas sobre imigração
+
+NEUTRO ({qtd_neutral} textos) - TEXTO OBJETIVO E INFORMATIVO:
+- Discussões neutras sobre imigração, diversidade cultural, políticas migratórias
 - Comentários positivos sobre diversidade cultural
+- Informações factuais sobre imigração
 - Debates construtivos sobre economia e imigração
-- IMPORTANTE: Gere EXATAMENTE {qtd_offensive} tweets OFENSIVO_GERAL (críticas a políticas, não a pessoas)
+- Linguagem respeitosa e educada
+- Foco em fatos, não em opiniões fortes
+
+OFENSIVO_GERAL ({qtd_offensive} textos) - TEXTO CRÍTICO MAS NÃO XENOFÓBICO:
+- Críticas legítimas a POLÍTICAS (não a pessoas)
+- Opiniões políticas respeitosas sobre imigração
+- Frustração com gestão pública, não com imigrantes
+- Críticas a governos, não a grupos étnicos
+- Linguagem mais forte, mas direcionada a instituições
+- IMPORTANTE: Gere EXATAMENTE {qtd_offensive} tweets OFENSIVO_GERAL
 
 IMPORTANTE: Para TODOS os tweets, use linguagem informal e coloquial, como se fosse uma pessoa real postando no Twitter.
 
@@ -51,11 +62,17 @@ XENOFÓBICOS:
 - "Mano, aqui onde eu moro tá cheio de gringo... ninguém aguenta mais 😡"
 - "Pq o governo n faz nada com esses invasores? A galera tá revoltada... 💀 #SegurancaPublica"
 
-NEUTROS:
+NEUTROS (objetivos e informativos):
 - "Realmente, a imigração é um tema complexo. Precisamos de políticas melhores 🤔 #ImigracaoBrasil"
 - "A diversidade cultural enriquece nosso país, mas precisamos de planejamento 💭"
 - "Nossa, q interessante ver como diferentes culturas se misturam aqui no Brasil 🌍 #Diversidade"
 - "Cara, a imigração pode ser uma oportunidade se bem planejada 💡 #Desenvolvimento"
+
+OFENSIVO_GERAL (crítico a políticas, não a pessoas):
+- "Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas"
+- "Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica"
+- "Galera, essas leis de imigração são ridículas! 😡 #ReformaJa"
+- "Nossa, q desorganização nas políticas migratórias! 😤 #Governo"
 
 FORMATO DE SAÍDA (JSON puro, sem markdown):
 CRÍTICO: Gere APENAS JSON válido. Use aspas duplas, escape aspas internas com \", termine todas as strings.
@@ -117,6 +134,20 @@ EXEMPLOS DE TWEETS CURTOS:
 - "Cara, n aguento mais esses venecos! 😤 #BrasilPrimeiro" (60 chars)
 - "Nossa, q interessante! 🌍 #Diversidade" (45 chars)
 - "Mano, a imigração é complexa... 🤔 #ImigracaoBrasil" (55 chars)
+
+DIFERENÇA CLARA ENTRE NEUTRO E OFENSIVO_GERAL:
+
+❌ NEUTRO (objetivo, informativo):
+"Cara, a imigração é um tema complexo que precisa de políticas melhores 🤔 #ImigracaoBrasil"
+
+✅ OFENSIVO_GERAL (crítico a políticas, não a pessoas):
+"Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas"
+
+❌ NEUTRO (respeitoso, construtivo):
+"A diversidade cultural enriquece nosso país 💭 #Diversidade"
+
+✅ OFENSIVO_GERAL (frustrado com gestão, não com pessoas):
+"Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica"
 
 EXEMPLOS DE OFENSIVO_GERAL (críticas a políticas, não a pessoas):
 - "Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas" (70 chars)
