@@ -2,7 +2,6 @@
 
 """
 Gerador de Corpus para Detecção de Discurso de Ódio - XENOFOBIA
-Trabalho de Mestrado em Processamento de Linguagem Natural
 
 Versão: 2.0
 Data: Outubro 2025

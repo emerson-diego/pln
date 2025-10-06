@@ -1,6 +1,5 @@
 # Geração de Dados Sintéticos - XENOFOBIA
 
-Trabalho de Mestrado em Processamento de Linguagem Natural
 
 ## 📋 Sobre o Projeto
 
@@ -127,4 +126,3 @@ Este projeto é destinado exclusivamente para fins acadêmicos e de pesquisa.
 
 **Data de Criação**: Outubro 2025  
 **Versão**: 2.0  
-**Curso**: Mestrado em Processamento de Linguagem Natural

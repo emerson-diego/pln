@@ -1,5 +1,4 @@
 # Dependências para o projeto de detecção de discurso de ódio - XENOFOBIA
-# Trabalho de Mestrado em Processamento de Linguagem Natural
 
 # API e geração de dados
 google-generativeai>=0.3.0
