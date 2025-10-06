@@ -205,9 +205,17 @@ class GeradorCorpusXenofobia:
         # Define proporção de textos com e sem xenofobia (50/50)
         qtd_xenofobia = quantidade // 2  # 50% com xenofobia
         qtd_nao_xenofobia = quantidade - qtd_xenofobia  # 50% sem xenofobia
-        # Dentro dos não-xenofobia, dividir entre NEUTRAL_BENIGN e OFFENSIVE_GENERAL
-        qtd_neutral = qtd_nao_xenofobia // 2  # 25% neutros
-        qtd_offensive = qtd_nao_xenofobia - qtd_neutral  # 25% ofensivos gerais
+        
+        # Dentro dos não-xenofobia, dividir entre NEUTRO e OFENSIVO_GERAL
+        # Usa distribuição alternada para garantir variedade mesmo em lotes pequenos
+        if qtd_nao_xenofobia == 1:
+            # Com 1 não-xenofobia, alterna entre neutro e ofensivo
+            qtd_neutral = 1 if random.choice([True, False]) else 0
+            qtd_offensive = qtd_nao_xenofobia - qtd_neutral
+        else:
+            # Com 2+ não-xenofobia, divide 50/50
+            qtd_neutral = qtd_nao_xenofobia // 2
+            qtd_offensive = qtd_nao_xenofobia - qtd_neutral
         
         # Usa o template carregado do arquivo
         if not self.prompt_template:
