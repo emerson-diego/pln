@@ -24,6 +24,7 @@ OFENSIVO_GERAL ({qtd_offensivo} textos) - TEXTO CRÍTICO MAS NÃO XENOFÓBICO:
 - Críticas legítimas a POLÍTICAS (não a pessoas)
 - Opiniões políticas respeitosas sobre imigração
 - Frustração com gestão pública, não com imigrantes
+- Pode usar palavrões, ser insultuoso mas nunca a grupos étnicos
 - Críticas a governos, não a grupos étnicos
 - Linguagem mais forte, mas direcionada a instituições
 - IMPORTANTE: Gere EXATAMENTE {qtd_offensivo} tweets OFENSIVO_GERAL
