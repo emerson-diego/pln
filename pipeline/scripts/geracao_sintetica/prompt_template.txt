@@ -120,21 +120,6 @@ EXEMPLOS ESPECÍFICOS DE COMO ESCREVER:
 ✅ FAÇA (autêntico do Twitter):
 "Nossa, q interessante ver como diferentes culturas se misturam aqui no Brasil 🌍 #Diversidade"
 
-REGRAS FINAIS:
-1. SEMPRE comece com "Cara", "Mano", "Galera", "Nossa", "Realmente"
-2. Use MUITAS abreviações: "pq", "vc", "tb", "mt", "hj", "q", "n", "ñ"
-3. Use emojis em TODOS os tweets
-4. Use hashtags em TODOS os tweets
-5. Seja MUITO informal e coloquial
-6. NÃO use linguagem acadêmica ou formal
-7. TWEETS CURTOS: Muitos tweets reais têm 50-150 caracteres, não 280!
-8. VARIEDADE DE TAMANHOS: Misture tweets curtos (50-100 chars) e médios (100-200 chars)
-9. GERE OFENSIVO_GERAL: Críticas a políticas, não a pessoas
-
-EXEMPLOS DE TWEETS CURTOS:
-- "Cara, n aguento mais esses venecos! 😤 #BrasilPrimeiro" (60 chars)
-- "Nossa, q interessante! 🌍 #Diversidade" (45 chars)
-- "Mano, a imigração é complexa... 🤔 #ImigracaoBrasil" (55 chars)
 
 DIFERENÇA CLARA ENTRE NEUTRO E OFENSIVO_GERAL:
 
@@ -150,9 +135,5 @@ DIFERENÇA CLARA ENTRE NEUTRO E OFENSIVO_GERAL:
 ✅ OFENSIVO_GERAL (frustrado com gestão, não com pessoas):
 "Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica"
 
-EXEMPLOS DE OFENSIVO_GERAL (críticas a políticas, não a pessoas):
-- "Cara, as políticas de imigração estão uma bagunça! 😤 #PoliticasPublicas" (70 chars)
-- "Mano, o governo n sabe o q faz com imigrantes... 🤦‍♂️ #GestaoPublica" (65 chars)
-- "Galera, essas leis de imigração são ridículas! 😡 #ReformaJa" (60 chars)
 
 Gere os {quantidade} exemplos agora:
