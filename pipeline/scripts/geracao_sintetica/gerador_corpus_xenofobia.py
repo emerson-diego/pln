@@ -210,12 +210,12 @@ class GeradorCorpusXenofobia:
         # Usa distribuição alternada para garantir variedade mesmo em lotes pequenos
         if qtd_nao_xenofobia == 1:
             # Com 1 não-xenofobia, alterna entre neutro e ofensivo
-            qtd_neutral = 1 if random.choice([True, False]) else 0
-            qtd_offensive = qtd_nao_xenofobia - qtd_neutral
+            qtd_neutro = 1 if random.choice([True, False]) else 0
+            qtd_offensive = qtd_nao_xenofobia - qtd_neutro
         else:
             # Com 2+ não-xenofobia, divide 50/50
-            qtd_neutral = qtd_nao_xenofobia // 2
-            qtd_offensive = qtd_nao_xenofobia - qtd_neutral
+            qtd_neutro = qtd_nao_xenofobia // 2
+            qtd_offensive = qtd_nao_xenofobia - qtd_neutro
         
         # Usa o template carregado do arquivo
         if not self.prompt_template:
@@ -226,7 +226,7 @@ class GeradorCorpusXenofobia:
             'quantidade': quantidade,
             'qtd_xenofobia': qtd_xenofobia,
             'qtd_nao_xenofobia': qtd_nao_xenofobia,
-            'qtd_neutral': qtd_neutral,
+            'qtd_neutro': qtd_neutro,
             'qtd_offensive': qtd_offensive,
             'contexto': contexto,
             'alvo_escolhido': alvo_escolhido,

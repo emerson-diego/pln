@@ -12,7 +12,7 @@ INSTRUÇÕES PARA TWEETS COM XENOFOBIA ({qtd_xenofobia} textos):
 
 INSTRUÇÕES PARA TWEETS SEM XENOFOBIA ({qtd_nao_xenofobia} textos):
 
-NEUTRO ({qtd_neutral} textos) - TEXTO OBJETIVO E INFORMATIVO:
+NEUTRO ({qtd_neutro} textos) - TEXTO OBJETIVO E INFORMATIVO:
 - Discussões neutras sobre imigração, diversidade cultural, políticas migratórias
 - Comentários positivos sobre diversidade cultural
 - Informações factuais sobre imigração
@@ -20,13 +20,13 @@ NEUTRO ({qtd_neutral} textos) - TEXTO OBJETIVO E INFORMATIVO:
 - Linguagem respeitosa e educada
 - Foco em fatos, não em opiniões fortes
 
-OFENSIVO_GERAL ({qtd_offensive} textos) - TEXTO CRÍTICO MAS NÃO XENOFÓBICO:
+OFENSIVO_GERAL ({qtd_offensivo} textos) - TEXTO CRÍTICO MAS NÃO XENOFÓBICO:
 - Críticas legítimas a POLÍTICAS (não a pessoas)
 - Opiniões políticas respeitosas sobre imigração
 - Frustração com gestão pública, não com imigrantes
 - Críticas a governos, não a grupos étnicos
 - Linguagem mais forte, mas direcionada a instituições
-- IMPORTANTE: Gere EXATAMENTE {qtd_offensive} tweets OFENSIVO_GERAL
+- IMPORTANTE: Gere EXATAMENTE {qtd_offensivo} tweets OFENSIVO_GERAL
 
 IMPORTANTE: Para TODOS os tweets, use linguagem informal e coloquial, como se fosse uma pessoa real postando no Twitter.
 
